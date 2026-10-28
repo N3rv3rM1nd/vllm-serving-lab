@@ -164,6 +164,38 @@ async def _sample_mem(idx: int, sink: list, interval: float = 0.5):
         await asyncio.sleep(interval)
 
 
+# 运行期需要跟踪的指标（Prometheus 名 -> CSV 列名）
+TS_FIELDS = {
+    "vllm:num_requests_running": "running",
+    "vllm:num_requests_waiting": "waiting",
+    "vllm:kv_cache_usage_perc": "kv_usage_perc",
+    "vllm:num_preemptions_total": "preemptions_total",
+}
+
+
+async def _sample_metrics_ts(host: str, port: int, out_path: Path,
+                             interval: float = 1.0) -> None:
+    """按固定间隔抓 /metrics 落成 CSV，用于画运行期时间线。
+
+    每行立即 flush：进程被 kill 时已采到的点仍保留。
+    """
+    cols = list(TS_FIELDS.values())
+    with out_path.open("w", encoding="utf-8", newline="") as f:
+        f.write("unix_ts," + ",".join(cols) + "\n")
+        f.flush()
+        while True:
+            try:
+                text = await scrape_metrics(host, port)
+                parsed = parse_metrics(text)
+                vals = [f"{parsed.get(name, float('nan')):.6f}"
+                        for name in TS_FIELDS]
+                f.write(f"{time.time():.3f}," + ",".join(vals) + "\n")
+                f.flush()
+            except (httpx.HTTPError, OSError, ValueError, asyncio.TimeoutError):
+                pass          # 采样失败不打断压测，下一拍再试
+            await asyncio.sleep(interval)
+
+
 # ------------------------------------------------------------------ 单档跑
 async def run_one_level(B: int, args, sweep_dir: Path, tag: str) -> dict:
     port = args.port
@@ -194,6 +226,7 @@ async def run_one_level(B: int, args, sweep_dir: Path, tag: str) -> dict:
     mem_idle = gpu_used_mib(gpu)
     mem_sink: list = []
     sampler = None
+    ts_sampler = None
     t0 = time.perf_counter()
     try:
         async with svc:
@@ -208,13 +241,19 @@ async def run_one_level(B: int, args, sweep_dir: Path, tag: str) -> dict:
             before = parse_metrics(before_txt)
 
             sampler = asyncio.create_task(_sample_mem(gpu, mem_sink))
+            ts_sampler = asyncio.create_task(
+                _sample_metrics_ts(args.host, port,
+                                   sweep_dir / f"timeseries_{tag}.csv")
+            )
             record = await R.run_benchmark(client, ns)
-            sampler.cancel()
-            try:
-                await sampler
-            except asyncio.CancelledError:
-                pass
+            for task in (sampler, ts_sampler):
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
             sampler = None
+            ts_sampler = None
 
             after_txt = await scrape_metrics(args.host, port)
             (sweep_dir / f"metrics_{tag}_after.txt").write_text(
@@ -237,6 +276,12 @@ async def run_one_level(B: int, args, sweep_dir: Path, tag: str) -> dict:
     except BaseException as e:  # noqa: BLE001
         res["error"] = repr(e)
     finally:
+        if ts_sampler is not None:
+            ts_sampler.cancel()
+            try:
+                await ts_sampler
+            except BaseException:
+                pass
         if sampler is not None:
             sampler.cancel()
             try:

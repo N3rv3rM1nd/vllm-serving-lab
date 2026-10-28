@@ -1,6 +1,56 @@
 {
-  "e1": {"family": "concurrency",     "labels": [], "repeats": {}},
-  "e2": {"family": "prefix_cache",    "labels": [], "control": null},
-  "e3": {"family": "chunked_prefill", "labels": []},
-  "e4": {"family": "kv_pressure",     "labels": []}
+  "e1": {
+    "family": "concurrency",
+    "labels": [],
+    "repeats": {},
+    "n_explore": 128,
+    "n_confirm": 512,
+    "slo_ttft_ms": 1000
+  },
+  "e2": {
+    "family": "prefix_cache",
+    "labels": [],
+    "control": null,
+    "fixed": {
+      "S": 3072,
+      "N": 256,
+      "B": 16
+    }
+  },
+  "e3": {
+    "family": "chunked_prefill",
+    "labels": [],
+    "fixed": {
+      "N": 256,
+      "B": 32
+    }
+  },
+  "e4": {
+    "family": "kv_pressure",
+    "labels": [],
+    "arms": {
+      "A": {
+        "kv_gib": 10,
+        "M": 32
+      },
+      "B": {
+        "kv_gib": 10,
+        "M": 16
+      },
+      "C": {
+        "kv_gib": null,
+        "M": 32
+      },
+      "D": {
+        "kv_gib": null,
+        "M": 16
+      },
+      "E": {
+        "kv_gib": null,
+        "M": 64
+      }
+    },
+    "block_seed": null,
+    "blocks": []
+  }
 }
