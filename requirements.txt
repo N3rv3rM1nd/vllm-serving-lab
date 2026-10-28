@@ -1,0 +1,9 @@
+# 运行采集脚本所需（vLLM 本身版本见 env/env.md）
+httpx
+openai
+numpy
+scipy
+matplotlib
+pandas
+seaborn
+nvidia-ml-py

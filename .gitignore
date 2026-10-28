@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+*.log
+analysis/out/
+analysis/cache/
+
+# 原始数据（L0+L1）入库；下面这些是运行期垃圾
+bench/vllm.log
+*.bak.*

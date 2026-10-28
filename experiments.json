@@ -1,0 +1,6 @@
+{
+  "e1": {"family": "concurrency",     "labels": [], "repeats": {}},
+  "e2": {"family": "prefix_cache",    "labels": [], "control": null},
+  "e3": {"family": "chunked_prefill", "labels": []},
+  "e4": {"family": "kv_pressure",     "labels": []}
+}
