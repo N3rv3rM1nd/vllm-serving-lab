@@ -54,12 +54,16 @@ class VLLMService:
         # cmd指令只涉及字符串没有int float
         if self.extra_args:
             args += self.extra_args
-        # 优先 uv（带 .env 隔离环境），否则回退到当前解释器的 vLLM 模块
+        # 三种启动方式，按可用性依次回退
+        # 注意：api_server 模块只认 --model，位置参数会被忽略并回落到默认模型
         if shutil.which("uv") and (_ROOT / ".env").exists():
             cmd = ["uv", "run", "--env-file", ".env"] + args
+        elif shutil.which("vllm"):
+            cmd = args                      # vllm serve <model> ...
         else:
             cmd = [sys.executable, "-m",
-                   "vllm.entrypoints.openai.api_server"] + args[2:]
+                   "vllm.entrypoints.openai.api_server",
+                   "--model", self.model] + args[3:]
         # 日志固定落在脚本目录，供采集脚本按 tag 归档
         self.log_f = open(_HERE / "vllm.log", mode="w")
         self.proc = subprocess.Popen(
