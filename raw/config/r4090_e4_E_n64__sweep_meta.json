@@ -1,0 +1,35 @@
+{
+  "sweep_id": "20261028_214948",
+  "started": "2026-10-28T21:49:48.902019",
+  "model": "/data/models/qwen2.5-1.5b",
+  "B_list": [
+    32
+  ],
+  "S": 8192,
+  "N": 64,
+  "max_tokens": 512,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "vocab_size": 10000,
+  "fixed_max_num_seqs": 64,
+  "gpu_memory_utilization": 0.6,
+  "gpu_physical_index": 0,
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "gpu_total_mib": 24564,
+  "repeat": 1,
+  "env": {
+    "cuda_visible_devices": "0",
+    "torch": "2.13.0+cu130",
+    "torch_cuda": "13.0",
+    "vllm": "0.31.0"
+  },
+  "quality": "reference-only",
+  "quality_reason": "shared GPU",
+  "engine_args": "--served-model-name /data/models/qwen2.5-1.5b --max-model-len 16384 --block-size 16 --enable-chunked-prefill --no-enable-prefix-caching --max-num-batched-tokens 2048 --kv-cache-memory-bytes 5368709120 --max-num-active-seqs 64",
+  "n_warm": 3,
+  "prefix_len": 0,
+  "prefix_ratio": 1.0,
+  "prefix_seed": 999,
+  "block_size": 16,
+  "label": "r4090_e4_E_n64"
+}

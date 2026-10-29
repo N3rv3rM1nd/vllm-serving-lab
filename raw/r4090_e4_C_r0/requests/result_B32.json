@@ -1,0 +1,1 @@
+{"_note": "只保留 L1 逐请求时间戳；L2 聚合已剥离，从 metrics 重算", "tag": "B32", "B": 32, "port": 8016, "ok": false, "error": "RuntimeError('vllm exited with code=1, see/data/work/vllm-serving-lab/bench/vllm.log')", "wall_total_s": 70.8134267559999, "n_requests": 0, "requests": []}

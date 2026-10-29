@@ -1,33 +1,121 @@
 {
+  "e0": {
+    "family": "kv_pool_selection",
+    "labels": [
+      "r4090_e0_kv10",
+      "r4090_e0_kv5"
+    ],
+    "note": "10 GiB 无抢占；5 GiB 出现 2 次抢占 → 低容量臂取 5 GiB"
+  },
   "e1": {
     "family": "concurrency",
-    "labels": [],
-    "repeats": {},
+    "explore": [
+      "r4090_e1_b16",
+      "r4090_e1_b32",
+      "r4090_e1_b4",
+      "r4090_e1_b64",
+      "r4090_e1_b8"
+    ],
+    "confirm": [
+      "r4090_e1_b16_conf_r1",
+      "r4090_e1_b16_conf_r2",
+      "r4090_e1_b16_conf_r3",
+      "r4090_e1_b16_conf_r4",
+      "r4090_e1_b32_conf_r0",
+      "r4090_e1_b32_conf_r1",
+      "r4090_e1_b32_conf_r2",
+      "r4090_e1_b32_conf_r3",
+      "r4090_e1_b32_conf_r4"
+    ],
+    "holdout": [
+      "r4090_holdout_b16_r0",
+      "r4090_holdout_b16_r1",
+      "r4090_holdout_b16_r2"
+    ],
+    "slo_ms": 1000,
     "n_explore": 128,
-    "n_confirm": 512,
-    "slo_ttft_ms": 1000
+    "n_confirm": 512
   },
   "e2": {
     "family": "prefix_cache",
-    "labels": [],
-    "control": null,
+    "labels": [
+      "r4090_e2_L0_off",
+      "r4090_e2_L0_off_r1",
+      "r4090_e2_L0_off_r2",
+      "r4090_e2_L0_on",
+      "r4090_e2_L0_on_r1",
+      "r4090_e2_L0_on_r2",
+      "r4090_e2_L2048_off",
+      "r4090_e2_L2048_off_r1",
+      "r4090_e2_L2048_off_r2",
+      "r4090_e2_L2048_on",
+      "r4090_e2_L2048_on_r1",
+      "r4090_e2_L2048_on_r2"
+    ],
     "fixed": {
       "S": 3072,
       "N": 256,
-      "B": 16
+      "B": 16,
+      "prefix_ratio": 1.0
     }
   },
   "e3": {
     "family": "chunked_prefill",
-    "labels": [],
+    "labels": [
+      "r4090_e3_S1024_mnbt2048_r0",
+      "r4090_e3_S1024_mnbt2048_r1",
+      "r4090_e3_S1024_mnbt2048_r2",
+      "r4090_e3_S1024_mnbt4096_r0",
+      "r4090_e3_S1024_mnbt4096_r1",
+      "r4090_e3_S1024_mnbt4096_r2",
+      "r4090_e3_S1024_mnbt512",
+      "r4090_e3_S1024_mnbt512_r1",
+      "r4090_e3_S1024_mnbt512_r2",
+      "r4090_e3_S1024_mnbt8192",
+      "r4090_e3_S1024_mnbt8192_r1",
+      "r4090_e3_S1024_mnbt8192_r2",
+      "r4090_e3_S8192_mnbt2048_r0",
+      "r4090_e3_S8192_mnbt2048_r1",
+      "r4090_e3_S8192_mnbt2048_r2",
+      "r4090_e3_S8192_mnbt4096_r0",
+      "r4090_e3_S8192_mnbt4096_r1",
+      "r4090_e3_S8192_mnbt4096_r2",
+      "r4090_e3_S8192_mnbt512",
+      "r4090_e3_S8192_mnbt512_r2",
+      "r4090_e3_S8192_mnbt8192",
+      "r4090_e3_S8192_mnbt8192_r1",
+      "r4090_e3_S8192_mnbt8192_r2"
+    ],
     "fixed": {
-      "N": 256,
       "B": 32
     }
   },
   "e4": {
     "family": "kv_pressure",
-    "labels": [],
+    "labels": [
+      "r4090_e4_A_n64",
+      "r4090_e4_A_n64_r1",
+      "r4090_e4_A_n64_r2",
+      "r4090_e4_B_r0",
+      "r4090_e4_B_r1",
+      "r4090_e4_B_r2",
+      "r4090_e4_C_n256_r0",
+      "r4090_e4_C_n256_r1",
+      "r4090_e4_C_n256_r2",
+      "r4090_e4_C_n64",
+      "r4090_e4_C_n64_r1",
+      "r4090_e4_C_n64_r2",
+      "r4090_e4_C_r0",
+      "r4090_e4_D_r0",
+      "r4090_e4_D_r1",
+      "r4090_e4_D_r2",
+      "r4090_e4_E_n256_r0",
+      "r4090_e4_E_n256_r1",
+      "r4090_e4_E_n256_r2",
+      "r4090_e4_E_n64",
+      "r4090_e4_E_n64_r1",
+      "r4090_e4_E_n64_r2"
+    ],
     "arms": {
       "A": {
         "kv_gib": 10,
@@ -38,19 +126,24 @@
         "M": 16
       },
       "C": {
-        "kv_gib": null,
+        "kv_gib": 5,
         "M": 32
       },
       "D": {
-        "kv_gib": null,
+        "kv_gib": 5,
         "M": 16
       },
       "E": {
-        "kv_gib": null,
+        "kv_gib": 5,
         "M": 64
       }
     },
-    "block_seed": null,
-    "blocks": []
+    "block_seed": 20261028
+  },
+  "smoke": {
+    "family": "smoke",
+    "labels": [
+      "smoke"
+    ]
   }
 }
